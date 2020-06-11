@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Wibby</title>
+
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="shortcut icon" href="/Sith_Eternal_insignia_blue.png" type="image/x-icon">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="estilo.css">
+
+
+
+
+
+
+
+</head>
+
+<body class="bg-dark toggled" id="wrapper">
+
+	<!-- Nav Bar -->
+	<nav class="navbar navbar-expand-sm  bg-dark navbar-dark sticky-top">
+		<!-- Brand -->
+		<a class="navbar-brand  col-9 d-flex">
+			<button class="btn btn-primary menu-toggle">Menu</button>
+			<form class="form-inline col-8">
+				<input class="form-control border-primary bg-dark col-10 mx-auto " type="search" placeholder="Search"
+					aria-label="Search">
+				<button class="btn btn-sm btn-link col-1" type="submit">
+					<i class="material-icons">search</i>
+				</button>
+			</form>
+		</a>
+
+		<!-- Toggler/collapsibe Button -->
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<!-- Navbar links -->
+		<div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="nav">
+				<span th:remove="tag" th:if=" (${#authorization.expression('hasAuthority(''ADMIN'')')})">
+				<li class="nav-item"><a class="nav-link" href="#"><button type="button"
+							class="btn btn-sm btn-outline-success" data-toggle="modal"
+							data-target="#crearPlataforma">Nuevo
+							Registro</button></a></li> </span>
+				<li class="nav-item"><a class="nav-link" th:href="@{/login}"> <i class="material-icons">fingerprint</i>
+					</a></li>
+				<li class="nav-item "><a class="nav-link" th:href="@{/logout}"> <i class="material-icons">account_circle</i>
+
+					</a></li>
+			</ul>
+		</div>
+	</nav>
+	<!-- /Nav Bar -->
+
+
+
+
+	<!-- Sidebar -->
+	<div class="bg-dark border border-dark" id="sidebar-wrapper">
+		<div class="sidebar-heading text-light">Base de Datos</div>
+
+		<form class="form-inline">
+			<input class="form-control border-primary bg-dark mx-auto col-9 mb-2" type="search" placeholder="Search"
+				aria-label="Search">
+			<button class="btn btn-sm btn-link" type="submit">
+				<i class="material-icons">search</i>
+			</button>
+		</form>
+		<ul class="ml-2 col-9 nav nav-pills flex-column">
+			<li class="nav-item mt-3"><a class="nav-link" th:href="@{/juegos}">
+				<i class="material-icons">games</i>Juegos</a></li>
+			<li class="nav-item mt-3"><a class="nav-link active" th:href="@{/plataformas}">
+				<i class="material-icons">settings_input_svideo</i>Plataformas</a></li>
+
+
+		</ul>
+
+		<!--/#sidebar-->
+
+
+	</div>
+
+	<!-- Page Content -->
+	<div class="container-fluid d-flex p-2" id="page-content-wrapper">
+
+
+		<div class="container-fluid" id="page-body">
+			<table class="table table-hover table-responsive-sm table-dark table-md">
+				<thead>
+					<tr>
+						<th scope="col">Id</th>
+						<th scope="col">Nombre</th>
+						<th scope="col"></th>
+
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="plat: ${plataformas}">
+						<td th:text="${plat.id}"></td>
+						<td th:text="${plat.nombre}"></td>
+						<td> <span th:remove="tag" th:if=" (${#authorization.expression('hasAuthority(''ADMIN'')')})">
+							<a type="button" class="btn btn-sm btn-outline-danger"
+							th:href="@{/plataformas/borrar/{id}(id=${plat.id})}">Borrar</a>
+						</span></td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+		<!--MODAL -->
+		<div class="modal fade" id="crearPlataforma" tabindex="-1"
+			role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="exampleModalLabel">Nuevo Poveedor</h4>
+						<button class="close" type="button" data-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+
+					<form action="#" th:action="@{/plataformas/anadir}"
+						th:object="${plat}" method="post">
+						<div class="modal-body">
+
+							<div class="form-row">
+								
+							</div>
+							<div class="form-row">
+							<div class="form-group col-md-12">
+									<label for="texto">Identificador</label> <input type="text"
+										th:field="*{id}" placeholder="inserta un texto"
+										class="form-control" id="texto">
+								</div>
+								<div class="form-group col-md-12">
+									<label for="texto">Nombre</label> <input type="text"
+										th:field="*{nombre}" placeholder="inserta un texto"
+										class="form-control" id="texto">
+								</div>
+
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="submit" value="Añadir"
+								class="btn btn-primary float-right">
+							<button data-dismiss="modal"
+								class="btn btn-outline-danger float-right mr-2">Cancelar</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /#page-content-wrapper -->
+
+
+</body>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="js.js"></script>
+
+</html>

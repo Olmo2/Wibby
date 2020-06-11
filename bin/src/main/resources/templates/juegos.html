@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Wibby</title>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet">
+<link rel="shortcut icon" href="/Sith_Eternal_insignia_blue.png"
+	type="image/x-icon">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="/estilo.css">
+
+
+
+
+
+
+</head>
+
+<body class="bg-dark toggled" id="wrapper">
+
+	<!-- Nav Bar -->
+	<nav class="navbar navbar-expand-sm  bg-dark navbar-dark sticky-top">
+		<!-- Brand -->
+		<a class="navbar-brand  col-9 d-flex">
+			<button class="btn btn-primary menu-toggle">Menu</button>
+			<form class="form-inline col-8">
+				<input class="form-control border-primary bg-dark col-10 mx-auto "
+					type="search" placeholder="Search" aria-label="Search">
+				<button class="btn btn-sm btn-link col-1" type="submit">
+					<i class="material-icons">search</i>
+				</button>
+			</form>
+		</a>
+
+		<!-- Toggler/collapsibe Button -->
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#collapsibleNavbar">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<!-- Navbar links -->
+		<div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="nav">
+				<span th:remove="tag" th:if=" (${#authorization.expression('hasAuthority(''ADMIN'')')})">
+					<li class="nav-item">
+					<a class="nav-link" href="#"><button
+						type="button" class="btn btn-sm btn-outline-success"
+						data-toggle="modal" data-target="#crearProducto">Nuevo Registro</button></a>
+					</li>
+				</span>
+				<li class="nav-item"><a class="nav-link" th:href="@{/login}">
+						<i class="material-icons">fingerprint</i>
+				</a></li>
+				<li class="nav-item "><a class="nav-link" role="button"
+					th:href="@{/logout}"> <i class="material-icons">account_circle</i>
+
+				</a></li>
+			</ul>
+		</div>
+	</nav>
+	<!-- /Nav Bar -->
+
+
+
+
+	<!-- Sidebar -->
+	<div class="bg-dark border border-dark" id="sidebar-wrapper">
+		<div class="sidebar-heading text-light">Base de Datos</div>
+
+		<form class="form-inline">
+			<input class="form-control border-primary bg-dark mx-auto col-9 mb-2"
+				type="search" placeholder="Search" aria-label="Search">
+			<button class="btn btn-sm btn-link" type="submit">
+				<i class="material-icons">search</i>
+			</button>
+		</form>
+		<ul class="ml-2 col-9 nav nav-pills flex-column">
+			<li class="nav-item mt-3"><a class="nav-link active"
+				th:href="@{/juegos}"> <i class="material-icons">games</i>Juegos
+			</a></li>
+			<li class="nav-item mt-3"><a class="nav-link"
+				th:href="@{/plataformas}"> <i class="material-icons">settings_input_svideo</i>Plataformas
+			</a></li>
+
+		</ul>
+
+		<!--/#sidebar-->
+
+
+	</div>
+
+	<!-- Page Content -->
+	<div class="container-fluid d-flex p-2" id="page-content-wrapper">
+
+
+		<div class="container-fluid" id="page-body">
+			<table
+				class="table table-hover table-responsive-sm table-dark table-md">
+				<thead>
+					<tr>
+						<th scope="col">REF</th>
+						<th scope="col">Portada</th>
+						<th scope="col">Nombre</th>
+						<th scope="col">Plataforma</th>
+						<th scope="col">Pegi</th>
+						<th scope="col">Año</th>
+						<th scope="col"></th>
+
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="juego: ${juegos}">
+						<td th:text="${juego.ref}"></td>
+						<td><img th:src="'/img/' + ${juego.ref} + '.jpg'" width="50"></td>
+						<td th:text="${juego.nombre}"></td>
+						<td>
+							<div th:if="${juego.plat}!=null">
+								<a th:id="'plat' + ${juego.ref}" href="#" th:href="@{'/juegos/' + ${juego.plat} }"
+									th:text="${juego.plat}"></a>
+							</div>
+							<div th:unless="${juego.plat}!=null">
+								<a th:id="'plat' + ${juego.ref}" href="#" th:href="@{/juegos/vacio}">Sin Plataforma</a>
+								<!-- <p>Sin Proveedor</p> -->
+							</div>
+						</td>
+						<!--
+							th:href="@{/productos/editar/{id}(id=${prod.nombre})}"
+							 <td th:text="${prod.prov.nombre}"></td>-->
+						<td th:text="${juego.pegi}"></td>
+						<td th:text="${juego.anio}"></td>
+
+						<td><span th:remove="tag"
+							th:if=" (${#authorization.expression('hasAuthority(''ADMIN'')')})">
+								<a type="button" class="btn btn-sm btn-outline-primary" href="#"
+								data-toggle="modal" data-target="#editarJuego"
+								th:attr="data-nombre=@{${juego.nombre}},
+								data-id=@{${juego.ref}},
+								data-pegi=@{${juego.pegi}},
+								data-anio=@{${juego.anio}},
+								
+								data-img=@{${juego.img}}">
+									Editar </a> <a type="button" class="btn btn-sm btn-outline-danger"
+								th:href="@{/juegos/borrar/{id}(id=${juego.ref})}"> Borrar </a>
+						</span></td>
+
+
+
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+		<!--MODAL CREAR -->
+		<div class="modal fade" id="crearProducto" tabindex="-1" role="dialog"
+			aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="exampleModalLabel">Nuevo Producto</h4>
+						<button class="close" type="button" data-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+
+					<form action="#" id="crear" th:action="@{/juegos/anadir}" onsubmit="return validateFormCrear()" th:object="${juego}"
+						method="post" enctype="multipart/form-data">
+						<div class="modal-body">
+
+							<div class="form-row">
+								<div class="form-group col-md-12">
+									<label for="texto">REF</label> <input type="text"
+										th:field="*{ref}" placeholder="inserta un texto"
+										class="form-control" id="texto">
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-12">
+									<label for="texto">Nombre</label> <input type="text"
+										th:field="*{nombre}" placeholder="inserta un texto"
+										class="form-control" id="texto">
+								</div>
+
+								<div class="form-row">
+									<div class="form-group col-md-12">
+										<label for="texto">Pegi</label>
+										 <input type="text"	th:field="*{pegi}" placeholder="inserta un texto"
+											class="form-control" id="texto">
+										<span class="text-danger" id="spegi"> </span>
+
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="form-group col-md-12">
+										<label for="texto"> Año de lanzamiento</label> <input
+											type="text" th:field="*{anio}" placeholder="inserta un texto"
+											class="form-control" id="texto">
+											 <span class="text-danger" id="sanio"> </span>
+									</div>
+								</div>
+
+								<div class="form-row">
+								<label for="file">Portada</label>
+								<div id="file" class="form-group col-md-12 custom-file">
+									<!-- <label for="texto">Portada</label> <input type="file" th:name="file"
+											placeholder="inserta un texto" class="form-control" id="img">-->
+
+									<input type="file" class="custom-file-input" id="img"
+										th:name="file" aria-describedby="img"> <label
+										class="custom-file-label" for="img">Selecciona una
+										portada</label>
+
+								</div>
+							</div>
+
+								<div class="form-row">
+									<div class="form-group col-md-12">
+										<label for="prov">Plataforma</label>
+										<ul>
+										<!-- <li th:each="plat: ${plataformas}"><input id="plat"
+												type="radio" name="plats" th:text="${plat.nombre}"
+												th:field="*{plat.id}" th:value="${plat.id}" />
+											</li> -->
+										<li th:each="plat: ${plataformas}" class="form-check" >
+											<label class="form-check-label mr-1">
+											 <input type="radio" class="form-check-input" 
+											th:id="${plat.id}" th:text="${plat.nombre}"
+											th:field="*{plat.id}" th:value="${plat.id}" >
+											</label>
+										</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="submit" value="Añadir"
+								class="btn btn-primary float-right">
+							<button data-dismiss="modal"
+								class="btn btn-outline-danger float-right mr-2">Cancelar</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal Editar -->
+		<div class="modal " id="editarJuego" tabindex="-1" role="dialog"
+			aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="exampleModalLabel"></h4>
+						<button class="close" type="button" data-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+
+					<form action="#" id="editar" onsubmit="return validateForm()"
+						th:action="@{/juegos/editar}" th:object="${juego}" method="post"
+						enctype="multipart/form-data">
+						<div class="modal-body">
+
+							<div class="form-row">
+								<div class="form-group col-md-12">
+									<label for="ID">REF</label> <input type="text"
+										th:field="*{ref}" class="form-control" id="ID">
+								</div>
+							</div>
+
+							<div class="form-row">
+								<div class="form-group col-md-12">
+									<label for="nombre">Nombre</label> <input type="text" required
+										th:field="*{nombre}" placeholder="inserta un texto"
+										class="form-control" id="nombre">
+								</div>
+							</div>
+
+							<div class="form-row">
+								<div class="form-group col-md-12">
+									<label for="pegi">Pegi</label> <input type="text" required
+										th:field="*{pegi}" placeholder="inserta un texto"
+										class="form-control" id="pegi"> 
+										<span class="text-danger" id="spegi"> </span>
+									<!--<a th:if="${#fields.hasErrors('pegi')}" th:errors="*{pegi}">Introduce un pegi válido,3,7,12,16 o 18 </a>-->
+
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-group col-md-12">
+									<label for="anio">Año de lanzamiento</label> <input type="text"
+										required th:field="*{anio}" placeholder="inserta un texto"
+										class="form-control" id="anio">
+										 <span class="text-danger" id="sanio"> </span>
+								</div>
+							</div>
+
+							<div class="form-row">
+								<label for="file">Portada</label>
+								<div id="file" class="form-group col-md-12 custom-file">
+									<!-- <label for="texto">Portada</label> <input type="file" th:name="file"
+											placeholder="inserta un texto" class="form-control" id="img">-->
+
+									<input type="file" class="custom-file-input" id="img"
+										th:name="file" aria-describedby="img"> <label
+										class="custom-file-label" for="img">Selecciona una
+										portada</label>
+
+								</div>
+							</div>
+
+							<!-- <td>
+									<div th:if="${juego.plat}!=null">
+										<a href="#" th:href="@{'/juegos/' + ${juego.plat} }" th:text="${juego.plat}"></a>
+									</div>
+									<div th:unless="${juego.plat}!=null">
+										<a href="#" th:href="@{/juegos/vacio}">Sin Plataforma</a>
+									</div>
+							</td> -->
+							<div class="form-row">
+								<div class="form-group col-md-12">
+									<label for="plataforma">Plataforma</label>
+									<ul>
+										<!-- <li th:each="plata: ${plataformas}">
+										<input type="radio" th:if="${plata.id == 'NDS'}"
+												th:id="${plata.id}"
+												th:text="${plata.nombre}"
+												th:value="${plata.id}"  th:checked="${true}">
+												
+									 	<input type="radio"  th:unless="${plata.id == 'NDS'}"
+												th:id="${plata.id}"
+												th:text="${plata.id}"
+												th:field="*{plat.id}"
+												th:value="${plata.id}">
+										</li> -->
+										<li th:each="plat: ${plataformas}"class="form-check" >
+											<label class="form-check-label mr-1">
+											 <input type="radio" class="form-check-input" 
+											th:id="${plat.id}" th:text="${plat.nombre}"
+											th:field="*{plat.id}" th:value="${plat.id}" >
+											</label>
+										</li>
+
+										<!-- <li th:each="plata: ${plataformas}">
+											<input type="radio"
+											th:id="${plata.id}" th:text="${plata.id}"
+											th:field="*{plat.id}" th:value="${plata.id}"></li>-->
+									</ul>
+								</div>
+							</div>
+
+
+
+						</div>
+						<div class="modal-footer">
+							<!--<input type="submit" value="Guardar" class="btn btn-primary float-right">-->
+							<button type="submit" class="btn btn-outline-primary"
+								th:href="@{/juegos}" data-backdrop="static">Enviar</button>
+							<a type="button" class="btn btn-outline-danger" th:href="@{/juegos}">Cancelar</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /#page-content-wrapper -->
+
+
+</body>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="/js.js"></script>
+
+</html>
